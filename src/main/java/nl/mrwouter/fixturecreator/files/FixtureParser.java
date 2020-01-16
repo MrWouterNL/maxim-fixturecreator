@@ -117,15 +117,15 @@ public class FixtureParser {
 							break;
 					}
 				}
-				if (line.toLowerCase().contains("attribute")) 
+				if (line.toLowerCase().contains("attribute"))
 					break;
 			}
-			
+
 			SimpleEntry<Object, NextFound> parsedObject;
-			
-			//first attributes, then parameters, so NextFound should be attribute 
+
+			// first attributes, then parameters, so NextFound should be attribute
 			NextFound nf = NextFound.ATTRIBUTE;
-			
+
 			while ((parsedObject = parseObject(scanner, nf)) != null) {
 				SimpleEntry<Object, NextFound> se = parsedObject;
 				if (se.getKey() instanceof Parameter) {
@@ -133,7 +133,7 @@ public class FixtureParser {
 				} else if (se.getKey() instanceof Attribute) {
 					attributes.add((Attribute) se.getKey());
 				}
-				
+
 				nf = se.getValue();
 				if (nf == NextFound.NOTHING) {
 					break;
@@ -151,7 +151,7 @@ public class FixtureParser {
 	public SimpleEntry<Object, NextFound> parseObject(Scanner scanner, NextFound next) {
 		String attributeName = null;
 		int attributeChannel = 0, attributeFineChan = -1, attributeHomeVal = 0;
-		
+
 		String parameterName = null, parameterType = null;
 		int[] attribList = null;
 		int displayerNum = -1;
@@ -159,11 +159,11 @@ public class FixtureParser {
 		while (scanner.hasNextLine()) {
 			Object object = null;
 			String line = scanner.nextLine();
-			
+
 			if (line.replaceAll("\\s", "").isEmpty() || line.contains("//"))
 				continue;
 
-			if (next == NextFound.ATTRIBUTE) {				
+			if (next == NextFound.ATTRIBUTE) {
 				if (line.contains("name") && line.contains("="))
 					attributeName = line.split("=")[1].replace("\"", "").replaceAll("\\s", "");
 				else if (line.contains("channel") && line.contains("="))
@@ -190,13 +190,15 @@ public class FixtureParser {
 
 			}
 			if (object != null) {
-				if (line.toLowerCase().contains("attribute")) {
-					return new SimpleEntry<>(object, NextFound.ATTRIBUTE);
-				} else if (line.toLowerCase().contains("parameter")) {
-					return new SimpleEntry<>(object, NextFound.PARAMETER);
-				} else {
-					return new SimpleEntry<>(object, NextFound.NOTHING);
+				while (scanner.hasNextLine()) {
+					line = scanner.nextLine();
+					if (line.toLowerCase().contains("attribute")) {
+						return new SimpleEntry<>(object, NextFound.ATTRIBUTE);
+					} else if (line.toLowerCase().contains("parameter")) {
+						return new SimpleEntry<>(object, NextFound.PARAMETER);
+					}
 				}
+				return new SimpleEntry<>(object, NextFound.NOTHING);
 			}
 		}
 		return null;
