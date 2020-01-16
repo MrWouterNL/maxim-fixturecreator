@@ -6,13 +6,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -58,16 +57,15 @@ public class FixtureParser {
 				out.writeln("		channel = " + attr.getChannel());
 				if (attr.getFineChannel() != -1)
 					out.writeln("		fineChan = " + attr.getFineChannel());
-				if (attr.getMinVal() != -1) 
+				if (attr.getMinVal() != -1)
 					out.writeln("		minval = " + attr.getMinVal());
-				if (attr.getMaxVal() != -1) 
+				if (attr.getMaxVal() != -1)
 					out.writeln("		maxval = " + attr.getMinVal());
-				
+
 				out.writeln("		homeVal = " + attr.getHomeVal());
 			}
 
 			for (Parameter param : fixture.getParameters()) {
-				System.out.println(param.toString());
 				out.newLine();
 				out.writeln("	Parameter");
 				out.writeln("		name = \"" + param.getName() + "\"");
@@ -119,24 +117,26 @@ public class FixtureParser {
 							break;
 					}
 				}
-				if (line.toLowerCase().contains("attribute")) {
-					Entry<Attribute, NextFound> entry = parseAttribute(scanner);
-
-					attributes.add(entry.getKey());
-					while (entry.getValue() == NextFound.ATTRIBUTE) {
-						entry = parseAttribute(scanner);
-						attributes.add(entry.getKey());
-					}
-					
-					Entry<Parameter, NextFound> parameterEntry = parseParameter(scanner);
-					if (entry.getValue() == NextFound.PARAMETER) {
-						parameters.add(parameterEntry.getKey());
-						while (parameterEntry.getValue() == NextFound.PARAMETER) {
-							parameterEntry = parseParameter(scanner);
-							parameters.add(parameterEntry.getKey());
-						}
-						
-					}
+				if (line.toLowerCase().contains("attribute")) 
+					break;
+			}
+			
+			SimpleEntry<Object, NextFound> parsedObject;
+			
+			//first attributes, then parameters, so NextFound should be attribute 
+			NextFound nf = NextFound.ATTRIBUTE;
+			
+			while ((parsedObject = parseObject(scanner, nf)) != null) {
+				SimpleEntry<Object, NextFound> se = parsedObject;
+				if (se.getKey() instanceof Parameter) {
+					parameters.add((Parameter) se.getKey());
+				} else if (se.getKey() instanceof Attribute) {
+					attributes.add((Attribute) se.getKey());
+				}
+				
+				nf = se.getValue();
+				if (nf == NextFound.NOTHING) {
+					break;
 				}
 			}
 
@@ -148,72 +148,61 @@ public class FixtureParser {
 		return null;
 	}
 
-	public Entry<Attribute, NextFound> parseAttribute(Scanner scanner) {
+	public SimpleEntry<Object, NextFound> parseObject(Scanner scanner, NextFound next) {
 		String attributeName = null;
 		int attributeChannel = 0, attributeFineChan = -1, attributeHomeVal = 0;
-		NextFound next = NextFound.NOTHING;
-
-		while (scanner.hasNextLine()) {
-			String line = scanner.nextLine();
-			if (line.replaceAll("\\s", "").isEmpty() || line.contains("//"))
-				continue;
-
-			if (line.contains("name") && line.contains("="))
-				attributeName = line.split("=")[1].replace("\"", "").replaceAll("\\s", "");
-			else if (line.contains("channel") && line.contains("="))
-				attributeChannel = Integer.valueOf(line.split("=")[1].replaceAll("\\s", ""));
-			else if (line.contains("fineChan") && line.contains("="))
-				attributeFineChan = Integer.valueOf(line.split("=")[1].replaceAll("\\s", ""));
-			else if (line.contains("homeVal") && line.contains("="))
-				attributeHomeVal = Integer.valueOf(line.split("=")[1].replaceAll("\\s", ""));
-			else {
-				if (line.toLowerCase().contains("attribute")) {
-					next = NextFound.ATTRIBUTE;
-					break;
-				}else if (line.toLowerCase().contains("parameter")) {
-					next = NextFound.PARAMETER;
-					break;
-				}
-			}
-		}
-		return new AbstractMap.SimpleEntry<Attribute, NextFound>(
-				new Attribute(attributeName, attributeChannel, attributeHomeVal, attributeFineChan), next);
-	}
-
-	public Entry<Parameter, NextFound> parseParameter(Scanner scanner) {
+		
 		String parameterName = null, parameterType = null;
 		int[] attribList = null;
 		int displayerNum = -1;
 
-		NextFound next = NextFound.NOTHING;
-
 		while (scanner.hasNextLine()) {
+			Object object = null;
 			String line = scanner.nextLine();
+			
 			if (line.replaceAll("\\s", "").isEmpty() || line.contains("//"))
 				continue;
 
-			if (line.contains("name") && line.contains("="))
-				parameterName = line.split("=")[1].replace("\"", "").replaceAll("\\s", "");
-			else if (line.contains("type") && line.contains("="))
-				parameterType = line.split("=")[1].replaceAll("\\s", "");
-			else if (line.contains("displayerNum") && line.contains("="))
-				displayerNum = Integer.valueOf(line.split("=")[1].replaceAll("\\s", ""));
-			else if (line.contains("attribList") && line.contains("="))
-				attribList = (int[]) Arrays.stream(line.split("=")[1].replaceAll("\\s", "").split(","))
-						.mapToInt(i -> Integer.valueOf(i)).toArray();
-			else {
-				if (line.toLowerCase().contains("parameter")) {
-					next = NextFound.PARAMETER;
-					break;
+			if (next == NextFound.ATTRIBUTE) {				
+				if (line.contains("name") && line.contains("="))
+					attributeName = line.split("=")[1].replace("\"", "").replaceAll("\\s", "");
+				else if (line.contains("channel") && line.contains("="))
+					attributeChannel = Integer.valueOf(line.split("=")[1].replaceAll("\\s", ""));
+				else if (line.contains("fineChan") && line.contains("="))
+					attributeFineChan = Integer.valueOf(line.split("=")[1].replaceAll("\\s", ""));
+				else if (line.contains("homeVal") && line.contains("="))
+					attributeHomeVal = Integer.valueOf(line.split("=")[1].replaceAll("\\s", ""));
+				else
+					object = new Attribute(attributeName, attributeChannel, attributeHomeVal, attributeFineChan);
+			} else if (next == NextFound.PARAMETER) {
+				if (line.contains("name") && line.contains("="))
+					parameterName = line.split("=")[1].replace("\"", "").replaceAll("\\s", "");
+				else if (line.contains("type") && line.contains("="))
+					parameterType = line.split("=")[1].replaceAll("\\s", "");
+				else if (line.contains("displayerNum") && line.contains("="))
+					displayerNum = Integer.valueOf(line.split("=")[1].replaceAll("\\s", ""));
+				else if (line.contains("attribList") && line.contains("="))
+					attribList = (int[]) Arrays.stream(line.split("=")[1].replaceAll("\\s", "").split(","))
+							.mapToInt(i -> Integer.valueOf(i)).toArray();
+				else
+					object = new Parameter(parameterName, displayerNum, attribList,
+							ParameterType.fromAbbreviation(parameterType));
+
+			}
+			if (object != null) {
+				if (line.toLowerCase().contains("attribute")) {
+					return new SimpleEntry<>(object, NextFound.ATTRIBUTE);
+				} else if (line.toLowerCase().contains("parameter")) {
+					return new SimpleEntry<>(object, NextFound.PARAMETER);
+				} else {
+					return new SimpleEntry<>(object, NextFound.NOTHING);
 				}
 			}
 		}
-		return new AbstractMap.SimpleEntry<Parameter, NextFound>(
-				new Parameter(parameterName, displayerNum, attribList, ParameterType.fromAbbreviation(parameterType)), next);
+		return null;
 	}
 
 	public enum NextFound {
 		NOTHING, ATTRIBUTE, PARAMETER;
 	}
-
 }

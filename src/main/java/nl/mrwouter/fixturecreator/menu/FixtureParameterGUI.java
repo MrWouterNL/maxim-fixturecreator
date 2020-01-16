@@ -202,7 +202,6 @@ public class FixtureParameterGUI extends JPanel {
 			int[] selectedAttributes = new int[param.getAttributeList().length];
 			int lastInserted = 0;
 			for (int attribute : param.getAttributeList()) {
-				System.out.println();
 				for (int i = 0; i < attributes.getModel().getSize(); i++) {
 					String item = attributes.getModel().getElementAt(i);
 					if (item.split("\\.")[0].equals("" + attribute)) {
