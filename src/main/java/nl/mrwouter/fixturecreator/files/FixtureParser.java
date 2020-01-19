@@ -150,7 +150,8 @@ public class FixtureParser {
 
 	public SimpleEntry<Object, NextFound> parseObject(Scanner scanner, NextFound next) {
 		String attributeName = null;
-		int attributeChannel = 0, attributeFineChan = -1, attributeHomeVal = 0;
+		int attributeChannel = 0, attributeFineChan = -1, attributeHomeVal = 0, attributeMinVal = -1,
+				attributeMaxVal = -1;
 
 		String parameterName = null, parameterType = null;
 		int[] attribList = null;
@@ -172,8 +173,14 @@ public class FixtureParser {
 					attributeFineChan = Integer.valueOf(line.split("=")[1].replaceAll("\\s", ""));
 				else if (line.contains("homeVal") && line.contains("="))
 					attributeHomeVal = Integer.valueOf(line.split("=")[1].replaceAll("\\s", ""));
+				else if (line.contains("minVal") && line.contains("="))
+					attributeMinVal = Integer.valueOf(line.split("=")[1].replaceAll("\\s", ""));
+				else if (line.contains("maxVal") && line.contains("="))
+					attributeMaxVal = Integer.valueOf(line.split("=")[1].replaceAll("\\s", ""));
 				else
-					object = new Attribute(attributeName, attributeChannel, attributeHomeVal, attributeFineChan);
+					object = new Attribute(attributeName, attributeChannel, attributeHomeVal, attributeFineChan,
+							attributeMinVal, attributeMaxVal);
+				
 			} else if (next == NextFound.PARAMETER) {
 				if (line.contains("name") && line.contains("="))
 					parameterName = line.split("=")[1].replace("\"", "").replaceAll("\\s", "");
@@ -191,12 +198,12 @@ public class FixtureParser {
 			}
 			if (object != null) {
 				while (scanner.hasNextLine()) {
-					line = scanner.nextLine();
 					if (line.toLowerCase().contains("attribute")) {
 						return new SimpleEntry<>(object, NextFound.ATTRIBUTE);
 					} else if (line.toLowerCase().contains("parameter")) {
 						return new SimpleEntry<>(object, NextFound.PARAMETER);
 					}
+					line = scanner.nextLine();
 				}
 				return new SimpleEntry<>(object, NextFound.NOTHING);
 			}

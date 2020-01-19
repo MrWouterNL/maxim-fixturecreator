@@ -137,7 +137,7 @@ public class FixtureAttributeGUI extends JPanel {
 			if (i < fixtureGui.getFixture().getAttributes().size()) {
 				Attribute attrib = fixtureGui.getFixture().getAttributes().get(i);
 				data[i] = (Object[]) Arrays.asList(attrib.getChannel(), getTableValue(attrib.getFineChannel()),
-						attrib.getName(), getTableValue(attrib.getHomeVal()), getTableValue(attrib.getMinVal()),
+						attrib.getName(), getTableValue(attrib.getHomeVal()), getTableValue(attrib.getMinVal(), true),
 						getTableValue(attrib.getMaxVal())).toArray();
 			} else {
 				data[i] = (Object[]) Arrays.asList(null, null, "", null, null, null).toArray();
@@ -148,7 +148,11 @@ public class FixtureAttributeGUI extends JPanel {
 	}
 
 	public Integer getTableValue(int value) {
-		return (value == 0 || value == -1) ? null : value;
+		return getTableValue(value, false);
+	}
+	
+	public Integer getTableValue(int value, boolean showZero) {
+		return ((value == 0 && !showZero) || value == -1) ? null : value;
 	}
 
 	@SuppressWarnings("serial")
@@ -208,17 +212,28 @@ public class FixtureAttributeGUI extends JPanel {
 				throw new IllegalArgumentException(
 						"Column 3 on row " + (count + 1) + " expected a name, but empty string was received.");
 
-			if (!table.getValueAt(count, 1).toString().isEmpty())
+			if (!isEmpty(table.getValueAt(count, 1)))
 				fineChan = (Integer) table.getValueAt(count, 1);
-			if (!table.getValueAt(count, 3).toString().isEmpty())
+			if (!isEmpty(table.getValueAt(count, 3)))
 				homeVal = (Integer) table.getValueAt(count, 3);
-			if (!table.getValueAt(count, 4).toString().isEmpty())
+			if (!isEmpty(table.getValueAt(count, 4)))
 				minval = (Integer) table.getValueAt(count, 4);
-			if (!table.getValueAt(count, 5).toString().isEmpty())
+			if (!isEmpty(table.getValueAt(count, 5)))
 				maxval = (Integer) table.getValueAt(count, 5);
 
 			attributes.add(new Attribute(name, channel, homeVal, fineChan, minval, maxval));
 		}
+		
+		if (!attributes.stream().filter(atr->atr.getName().equals("INTENSITY")).findFirst().isPresent()) {
+			// Required according to page 24 of the manual
+			throw new IllegalArgumentException(
+					"No attribute with the name 'INTENSITY' found. Please create one on channel 0 if there is none (see page 24 of the fixt. manual).");
+		}
+		
 		return attributes;
+	}
+	
+	private boolean isEmpty(Object obj)  {
+		return obj == null || obj.toString().isEmpty();
 	}
 }

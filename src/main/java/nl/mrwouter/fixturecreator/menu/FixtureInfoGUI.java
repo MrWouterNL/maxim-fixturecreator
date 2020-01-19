@@ -93,6 +93,7 @@ public class FixtureInfoGUI extends JPanel {
 		});
 
 		JLabel statusmessage = new JLabel();
+		statusmessage.setFont(new Font("DialogInput", Font.BOLD, 12));
 		statusmessage.setText(" ");
 
 		JButton openFileButton = new JButton("Open File");
@@ -168,7 +169,7 @@ public class FixtureInfoGUI extends JPanel {
 						fixtureGui.getFixture().setAttributes(fixtureGui.fixtureAttributes.getAttributes());
 					} catch (IllegalArgumentException ex) {
 						ex.printStackTrace();
-						statusmessage.setText(ex.getMessage());
+						statusmessage.setText("<html>" + ex.getMessage() + "</html>");
 						statusmessage.setForeground(Color.RED);
 						return;
 					}
@@ -177,18 +178,18 @@ public class FixtureInfoGUI extends JPanel {
 					List<Parameter> parameters = new ArrayList<>();
 					for (FixtureParameterGUI fixParam : fixtureGui.parameterTabs) {
 						Parameter param = fixParam.getParameter();
-						
+
 						if (param.getName().replaceAll("\\s", "").isEmpty()) {
 							statusmessage.setText("Parameter " + paramsChecked + " doesn't have a name!");
 							statusmessage.setForeground(Color.RED);
 							return;
 						}
 						if (!param.getName().startsWith("-") || !param.getName().endsWith("-")) {
-							statusmessage.setText("Parameter " + paramsChecked + "'s name needs to start and end with the - char.");
+							statusmessage.setText(
+									"Parameter " + paramsChecked + "'s name needs to start and end with the - char.");
 							statusmessage.setForeground(Color.RED);
 							return;
 						}
-						
 
 						parameters.add(fixParam.getParameter());
 						paramsChecked++;
@@ -267,12 +268,11 @@ public class FixtureInfoGUI extends JPanel {
 									.addComponent(fixtureVersion, Alignment.LEADING)
 									.addComponent(fullFixtureName, Alignment.LEADING)
 									.addComponent(fixtureName))
-								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-									.addGroup(groupLayout.createSequentialGroup()
-										.addComponent(createFixtureButton)
-										.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-										.addComponent(createParameterButton))
-									.addComponent(statusmessage, GroupLayout.PREFERRED_SIZE, 423, GroupLayout.PREFERRED_SIZE)))
+								.addGroup(groupLayout.createSequentialGroup()
+									.addComponent(createFixtureButton)
+									.addPreferredGap(ComponentPlacement.RELATED, 176, Short.MAX_VALUE)
+									.addComponent(createParameterButton))
+								.addComponent(statusmessage, GroupLayout.PREFERRED_SIZE, 423, GroupLayout.PREFERRED_SIZE))
 							.addGap(27))))
 		);
 		groupLayout.setVerticalGroup(
@@ -301,9 +301,9 @@ public class FixtureInfoGUI extends JPanel {
 						.addComponent(fixtureVersion, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(fixtureVersionHint, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE))
 					.addGap(18)
-					.addComponent(statusmessage, GroupLayout.PREFERRED_SIZE, 27, GroupLayout.PREFERRED_SIZE)
-					.addGap(13)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+					.addComponent(statusmessage, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addComponent(createFixtureButton)
 						.addComponent(createParameterButton))
 					.addGap(70))
