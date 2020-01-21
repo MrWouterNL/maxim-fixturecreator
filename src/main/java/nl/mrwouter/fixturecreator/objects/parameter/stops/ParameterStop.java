@@ -2,6 +2,49 @@ package nl.mrwouter.fixturecreator.objects.parameter.stops;
 
 public class ParameterStop {
 	
+	private String name;
+	private boolean mouseable;
+	private WheelStop wheelstop;
+	private ValueDisplayFormat vdf;
+	
+	private WheelStop degreeRange;
+	
+	public ParameterStop(String name, boolean mouseable, WheelStop stop, ValueDisplayFormat vdf) {
+		this.name = name;
+		this.mouseable = mouseable;
+		this.wheelstop = stop;
+		this.vdf = vdf;
+	}
+	
+	public ParameterStop(String name, boolean mouseable, WheelStop stop, ValueDisplayFormat vdf, WheelStop degreeRange) {
+		this(name, mouseable, stop, vdf);
+		this.degreeRange = degreeRange;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public boolean isMouseable() {
+		return mouseable;
+	}
+	
+	/*
+	 * Still needs an implementation for multiple weheelstops (page 22)
+	 */
+	public WheelStop getWheelStop() {
+		return wheelstop;
+	}
+	
+	public ValueDisplayFormat getValueDisplayFormat() {
+		return vdf;
+	}
+	
+	public WheelStop getDegreeRange() {
+		return degreeRange;
+	}
+	
+		
 	
 	//General:
 	// Mouseable
