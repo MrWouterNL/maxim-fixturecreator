@@ -214,8 +214,10 @@ public class FixtureParameterGUI extends JPanel {
 		}
 
 		Object[][] data = new Object[2][];
-		data[0] = new Object[] { "yeet", true, true, ValueDisplayFormat.DEGREES, 69 };
-		data[1] = new Object[] { "yeet", true, false, ValueDisplayFormat.ONE_DIGIT_AS_PERCENTAGE, 3 };
+		// "Name", "Mouseable", "Range (min-max)", "Value display", "Degree range
+		// (min-max)"
+		data[0] = new Object[] { "Yeeth", true, "0-127", ValueDisplayFormat.DEGREES, "0-170" };
+		data[1] = new Object[] { "Yooth", true, "128-255", ValueDisplayFormat.ONE_DIGIT_AS_PERCENTAGE, "" };
 
 		tablePane.setViewportView(getTable(2, data));
 
@@ -224,21 +226,33 @@ public class FixtureParameterGUI extends JPanel {
 
 	@SuppressWarnings("serial")
 	private JTable getTable(int dataRows, Object[][] data) {
-		String column[] = { "Name", "Degrees", "Mousable", "Value display", "Homevalue" };
+		// String name, boolean mouseable, WheelStop stop, ValueDisplayFormat vdf,
+		// WheelStop degreeRange
+		String column[] = { "Name", "Mouseable", "Range (min-max)", "Value display", "Degree range (min-max)" };
 		table = new JTable(data, column) {
 			@Override
 			public Class<?> getColumnClass(int column) {
 				switch (column) {
 				case 1:
-				case 2:
 					return Boolean.class;
 				case 3:
 					return ValueDisplayFormat.class;
-				case 4:
-					return Integer.class;
 				default:
 					return String.class;
 				}
+			}
+
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				if (!table.getValueAt(row, 3).toString().equals(ValueDisplayFormat.DEGREES.name()))
+					table.setValueAt("", row, 4);
+
+				if (column == 4) {
+					if (!table.getValueAt(row, 3).toString().equals(ValueDisplayFormat.DEGREES.name())) {
+						return false;
+					}
+				}
+				return true;
 			}
 		};
 		table.getTableHeader().setReorderingAllowed(false);
