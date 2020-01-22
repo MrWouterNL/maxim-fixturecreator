@@ -214,8 +214,6 @@ public class FixtureParameterGUI extends JPanel {
 		}
 
 		Object[][] data = new Object[2][];
-		// "Name", "Mouseable", "Range (min-max)", "Value display", "Degree range
-		// (min-max)"
 		data[0] = new Object[] { "Yeeth", true, "0-127", ValueDisplayFormat.DEGREES, "0-170" };
 		data[1] = new Object[] { "Yooth", true, "128-255", ValueDisplayFormat.ONE_DIGIT_AS_PERCENTAGE, "" };
 
@@ -226,8 +224,6 @@ public class FixtureParameterGUI extends JPanel {
 
 	@SuppressWarnings("serial")
 	private JTable getTable(int dataRows, Object[][] data) {
-		// String name, boolean mouseable, WheelStop stop, ValueDisplayFormat vdf,
-		// WheelStop degreeRange
 		String column[] = { "Name", "Mouseable", "Range (min-max)", "Value display", "Degree range (min-max)" };
 		table = new JTable(data, column) {
 			@Override

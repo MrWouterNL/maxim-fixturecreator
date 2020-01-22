@@ -19,6 +19,9 @@ import nl.mrwouter.fixturecreator.objects.Attribute;
 import nl.mrwouter.fixturecreator.objects.Fixture;
 import nl.mrwouter.fixturecreator.objects.parameter.Parameter;
 import nl.mrwouter.fixturecreator.objects.parameter.ParameterType;
+import nl.mrwouter.fixturecreator.objects.parameter.stops.ParameterStop;
+import nl.mrwouter.fixturecreator.objects.parameter.stops.ValueDisplayFormat;
+import nl.mrwouter.fixturecreator.objects.parameter.stops.WheelStop;
 
 public class FixtureParser {
 
@@ -156,6 +159,7 @@ public class FixtureParser {
 		String parameterName = null, parameterType = null;
 		int[] attribList = null;
 		int displayerNum = -1;
+		List<ParameterStop> stops = new ArrayList<>();
 
 		while (scanner.hasNextLine()) {
 			Object object = null;
@@ -180,7 +184,7 @@ public class FixtureParser {
 				else
 					object = new Attribute(attributeName, attributeChannel, attributeHomeVal, attributeFineChan,
 							attributeMinVal, attributeMaxVal);
-				
+
 			} else if (next == NextFound.PARAMETER) {
 				if (line.contains("name") && line.contains("="))
 					parameterName = line.split("=")[1].replace("\"", "").replaceAll("\\s", "");
@@ -191,7 +195,28 @@ public class FixtureParser {
 				else if (line.contains("attribList") && line.contains("="))
 					attribList = (int[]) Arrays.stream(line.split("=")[1].replaceAll("\\s", "").split(","))
 							.mapToInt(i -> Integer.valueOf(i)).toArray();
-				else
+				else if (line.contains("stop") && line.contains("=")) {
+					// stop = ( 32: 32),N,"Color 2"
+					// stop = (M 0:255),D,0,170,"Pan="
+					boolean mouseable = false;
+					String name = "";
+
+					String[] parameterStop = line.split("=")[1].split(",");
+					String[] stopArr = parameterStop[0].replace("(", "").replace(")", "").replace("M", "")
+							.replace(" ", "").split(":");
+
+					WheelStop stop = new WheelStop(Integer.parseInt(stopArr[0]), Integer.parseInt(stopArr[1]));
+					if (parameterStop[0].contains("M"))
+						mouseable = true;
+					ValueDisplayFormat vdf = ValueDisplayFormat.fromAbbreviation(parameterStop[1]);
+					
+					if (parameterStop.length == 3) {
+						name = parameterStop[2];
+					}else {
+						name = parameterStop[4];
+					}
+
+				} else
 					object = new Parameter(parameterName, displayerNum, attribList,
 							ParameterType.fromAbbreviation(parameterType));
 
