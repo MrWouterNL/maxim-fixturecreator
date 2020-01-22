@@ -11,12 +11,12 @@ import javax.swing.JTable;
 import nl.mrwouter.fixturecreator.objects.parameter.stops.ValueDisplayFormat;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class CustomComboBoxEditor extends DefaultCellEditor {
+public class CustomVDFEditor extends DefaultCellEditor {
 
 	private static final long serialVersionUID = 1L;
 	private DefaultComboBoxModel model;
 
-	public CustomComboBoxEditor() {
+	public CustomVDFEditor() {
 		super(new JComboBox());
 		this.model = (DefaultComboBoxModel) ((JComboBox) getComponent()).getModel();
 		Arrays.asList(ValueDisplayFormat.values()).stream().forEach(vdf -> model.addElement(vdf.toString()));

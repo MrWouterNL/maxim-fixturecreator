@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -23,18 +24,21 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.AbstractDocument;
 
-import nl.mrwouter.fixturecreator.menu.utils.CustomComboBoxEditor;
+import nl.mrwouter.fixturecreator.menu.utils.CustomPSTEditor;
+import nl.mrwouter.fixturecreator.menu.utils.CustomVDFEditor;
 import nl.mrwouter.fixturecreator.menu.utils.LimitDocumentFilter;
 import nl.mrwouter.fixturecreator.menu.utils.ModifyListener;
 import nl.mrwouter.fixturecreator.objects.parameter.Parameter;
 import nl.mrwouter.fixturecreator.objects.parameter.ParameterType;
+import nl.mrwouter.fixturecreator.objects.parameter.stops.ParameterStop;
+import nl.mrwouter.fixturecreator.objects.parameter.stops.ParameterStopType;
 import nl.mrwouter.fixturecreator.objects.parameter.stops.ValueDisplayFormat;
 
 public class FixtureParameterGUI extends JPanel {
 
 	private static final long serialVersionUID = 5180782518088711551L;
 	// private FixtureGUI fixtureGui;
-	private Parameter parameter = new Parameter("", -1, new int[] { -1 }, ParameterType.NO_STORE);
+	private Parameter parameter = new Parameter("", -1, new int[] { -1 }, ParameterType.NO_STORE, new ArrayList<>());
 	private JPanel panel;
 	private JComboBox<Integer> parameterDisplay;
 	private JComboBox<String> comboBox;
@@ -113,68 +117,65 @@ public class FixtureParameterGUI extends JPanel {
 		JScrollPane tablePane = new JScrollPane();
 
 		GroupLayout groupLayout = new GroupLayout(panel);
-		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup().addContainerGap()
-						.addComponent(attributeListHint, GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE).addGap(593))
-				.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup().addGroup(groupLayout
-						.createParallelGroup(Alignment.TRAILING)
-						.addGroup(groupLayout.createSequentialGroup().addContainerGap().addComponent(tablePane,
-								GroupLayout.PREFERRED_SIZE, 654, GroupLayout.PREFERRED_SIZE))
-						.addGroup(groupLayout.createSequentialGroup().addContainerGap().addGroup(groupLayout
-								.createParallelGroup(Alignment.LEADING)
-								.addGroup(groupLayout.createSequentialGroup().addGroup(groupLayout
-										.createParallelGroup(Alignment.TRAILING)
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(Alignment.TRAILING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(attributeListHint, GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE)
+							.addGap(593))
+						.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+								.addComponent(tablePane, GroupLayout.PREFERRED_SIZE, 654, GroupLayout.PREFERRED_SIZE)
+								.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+									.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
 										.addGroup(groupLayout.createSequentialGroup()
-												.addComponent(parameterNameHint, GroupLayout.DEFAULT_SIZE, 166,
-														Short.MAX_VALUE)
-												.addPreferredGap(ComponentPlacement.RELATED).addComponent(parameterName,
-														GroupLayout.PREFERRED_SIZE, 225, GroupLayout.PREFERRED_SIZE))
+											.addComponent(parameterNameHint, GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
+											.addPreferredGap(ComponentPlacement.RELATED)
+											.addComponent(parameterName, GroupLayout.PREFERRED_SIZE, 225, GroupLayout.PREFERRED_SIZE))
 										.addGroup(groupLayout.createSequentialGroup()
-												.addComponent(parameterDisplayHint, GroupLayout.DEFAULT_SIZE, 166,
-														Short.MAX_VALUE)
-												.addPreferredGap(ComponentPlacement.RELATED)
-												.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-														.addComponent(parameterDisplay, 0, GroupLayout.DEFAULT_SIZE,
-																Short.MAX_VALUE)
-														.addComponent(comboBox, 0, 225, Short.MAX_VALUE)
-														.addComponent(scrollPane, Alignment.TRAILING,
-																GroupLayout.PREFERRED_SIZE, 225,
-																GroupLayout.PREFERRED_SIZE))))
-										.addGap(142).addComponent(deleteParameterButton))
-								.addGroup(groupLayout.createSequentialGroup()
-										.addComponent(parameterTypeHint, GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE)
-										.addGap(272)))))
-						.addGap(36)));
-		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout
-				.createSequentialGroup().addContainerGap()
-				.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(parameterName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-								GroupLayout.PREFERRED_SIZE)
+											.addComponent(parameterDisplayHint, GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
+											.addPreferredGap(ComponentPlacement.RELATED)
+											.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+												.addComponent(parameterDisplay, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+												.addComponent(comboBox, 0, 225, Short.MAX_VALUE)
+												.addComponent(scrollPane, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 225, GroupLayout.PREFERRED_SIZE))))
+									.addGap(142)
+									.addComponent(deleteParameterButton))
+								.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+									.addComponent(parameterTypeHint, GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE)
+									.addGap(272)))
+							.addGap(36))))
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(parameterName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(parameterNameHint, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
 						.addComponent(deleteParameterButton))
-				.addPreferredGap(ComponentPlacement.RELATED)
-				.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(parameterDisplayHint)
-						.addComponent(parameterDisplay, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-								GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(ComponentPlacement.RELATED)
-				.addGroup(groupLayout
-						.createParallelGroup(Alignment.BASELINE).addComponent(parameterTypeHint).addComponent(comboBox,
-								GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(ComponentPlacement.UNRELATED)
-				.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(Alignment.TRAILING,
-								groupLayout.createSequentialGroup()
-										.addComponent(attributeListHint, GroupLayout.PREFERRED_SIZE, 16,
-												GroupLayout.PREFERRED_SIZE)
-										.addGap(63))
-						.addGroup(
-								groupLayout.createSequentialGroup()
-										.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 57,
-												GroupLayout.PREFERRED_SIZE)
-										.addGap(22)))
-				.addPreferredGap(ComponentPlacement.RELATED)
-				.addComponent(tablePane, GroupLayout.PREFERRED_SIZE, 187, GroupLayout.PREFERRED_SIZE)
-				.addContainerGap(86, Short.MAX_VALUE)));
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(parameterDisplayHint)
+						.addComponent(parameterDisplay, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(parameterTypeHint)
+						.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(attributeListHint, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE)
+							.addGap(63))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 57, GroupLayout.PREFERRED_SIZE)
+							.addGap(22)))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(tablePane, GroupLayout.PREFERRED_SIZE, 168, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(105, Short.MAX_VALUE))
+		);
 		attributes = new JList<>();
 		scrollPane.setViewportView(attributes);
 		attributes.setModel(new DefaultComboBoxModel<String>(fixtureGui.getFixture().getAttributes().stream()
@@ -213,9 +214,19 @@ public class FixtureParameterGUI extends JPanel {
 			attributes.setSelectedIndices(selectedAttributes);
 		}
 
-		Object[][] data = new Object[2][];
-		data[0] = new Object[] { "Yeeth", true, "0-127", ValueDisplayFormat.DEGREES, "0-170" };
-		data[1] = new Object[] { "Yooth", true, "128-255", ValueDisplayFormat.ONE_DIGIT_AS_PERCENTAGE, "" };
+		Object[][] data = new Object[parameter.getStops().size()][];
+		for (int i = 0; i < parameter.getStops().size(); i++) {
+			ParameterStop stop = parameter.getStops().get(i);
+			if (stop.getValueDisplayFormat() == ValueDisplayFormat.DEGREES) {
+				data[i] = new Object[] { stop.getName(), stop.getType(),
+						stop.getWheelStop().toString(),
+						stop.getValueDisplayFormat(), stop.getDegreeRange().toString()};
+			} else {
+				data[i] = new Object[] { stop.getName(), stop.getType(),
+						stop.getWheelStop().toString(),
+						stop.getValueDisplayFormat(), "" };
+			}
+		}
 
 		tablePane.setViewportView(getTable(2, data));
 
@@ -224,13 +235,13 @@ public class FixtureParameterGUI extends JPanel {
 
 	@SuppressWarnings("serial")
 	private JTable getTable(int dataRows, Object[][] data) {
-		String column[] = { "Name", "Mouseable", "Range (min-max)", "Value display", "Degree range (min-max)" };
+		String column[] = { "Name", "Type", "Range (min-max)", "Value display", "Degree range (min-max)" };
 		table = new JTable(data, column) {
 			@Override
 			public Class<?> getColumnClass(int column) {
 				switch (column) {
 				case 1:
-					return Boolean.class;
+					return ParameterStopType.class;
 				case 3:
 					return ValueDisplayFormat.class;
 				default:
@@ -252,7 +263,8 @@ public class FixtureParameterGUI extends JPanel {
 			}
 		};
 		table.getTableHeader().setReorderingAllowed(false);
-		table.getColumn("Value display").setCellEditor(new CustomComboBoxEditor());
+		table.getColumn("Value display").setCellEditor(new CustomVDFEditor());
+		table.getColumn("Type").setCellEditor(new CustomPSTEditor());
 
 		return table;
 	}

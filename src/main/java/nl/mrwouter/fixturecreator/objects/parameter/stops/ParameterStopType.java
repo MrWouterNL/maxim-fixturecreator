@@ -3,12 +3,12 @@ package nl.mrwouter.fixturecreator.objects.parameter.stops;
 import java.util.Arrays;
 import java.util.Optional;
 
-public enum ValueDisplayFormat {
-	DEGREES("D"), NO_VALUE_DISPLAYED("N"), ONE_DIGIT_AS_PERCENTAGE("1"), TWO_DIGITS_AS_PERCENTAGE("2");
+public enum ParameterStopType {
+	MOUSEABLE("M"), NON_MOUSEABLE(" "), READ_ONLY("R");
 
 	private String abbreviaton;
 
-	private ValueDisplayFormat(String abbreviaton) {
+	private ParameterStopType(String abbreviaton) {
 		this.abbreviaton = abbreviaton;
 	}
 
@@ -16,11 +16,11 @@ public enum ValueDisplayFormat {
 		return abbreviaton;
 	}
 
-	public static ValueDisplayFormat fromAbbreviation(String abbreviation) {
-		Optional<ValueDisplayFormat> matches = Arrays.stream(ValueDisplayFormat.values())
+	public static ParameterStopType fromAbbreviation(String abbreviation) {
+		Optional<ParameterStopType> matches = Arrays.stream(ParameterStopType.values())
 				.filter(type -> type.getAbbreviation().equalsIgnoreCase(abbreviation)).findFirst();
 		if (!matches.isPresent()) {
-			return null;
+			return ParameterStopType.NON_MOUSEABLE;
 		}
 		return matches.get();
 	}

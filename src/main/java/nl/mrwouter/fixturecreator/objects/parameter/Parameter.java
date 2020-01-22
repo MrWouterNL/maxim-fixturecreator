@@ -1,7 +1,10 @@
 package nl.mrwouter.fixturecreator.objects.parameter;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
+
+import nl.mrwouter.fixturecreator.objects.parameter.stops.ParameterStop;
 
 public class Parameter {
 
@@ -9,12 +12,14 @@ public class Parameter {
 	private int displayerNum;
 	private int[] attribList;
 	private ParameterType type;
+	private List<ParameterStop> stops;
 
-	public Parameter(String name, int displayerNum, int[] attribList, ParameterType type) {
+	public Parameter(String name, int displayerNum, int[] attribList, ParameterType type, List<ParameterStop> stops) {
 		this.name = name;
 		this.displayerNum = displayerNum;
 		this.attribList = attribList;
 		this.type = type;
+		this.stops = stops;
 	}
 
 	public void setName(String name) {
@@ -47,6 +52,10 @@ public class Parameter {
 
 	public int[] getAttributeList() {
 		return attribList;
+	}
+	
+	public List<ParameterStop> getStops() {
+		return stops;
 	}
 
 	@Override

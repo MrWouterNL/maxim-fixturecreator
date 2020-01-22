@@ -20,6 +20,7 @@ import nl.mrwouter.fixturecreator.objects.Fixture;
 import nl.mrwouter.fixturecreator.objects.parameter.Parameter;
 import nl.mrwouter.fixturecreator.objects.parameter.ParameterType;
 import nl.mrwouter.fixturecreator.objects.parameter.stops.ParameterStop;
+import nl.mrwouter.fixturecreator.objects.parameter.stops.ParameterStopType;
 import nl.mrwouter.fixturecreator.objects.parameter.stops.ValueDisplayFormat;
 import nl.mrwouter.fixturecreator.objects.parameter.stops.WheelStop;
 
@@ -198,27 +199,34 @@ public class FixtureParser {
 				else if (line.contains("stop") && line.contains("=")) {
 					// stop = ( 32: 32),N,"Color 2"
 					// stop = (M 0:255),D,0,170,"Pan="
-					boolean mouseable = false;
 					String name = "";
+					WheelStop degreeRange = null;
 
 					String[] parameterStop = line.split("=")[1].split(",");
-					String[] stopArr = parameterStop[0].replace("(", "").replace(")", "").replace("M", "")
-							.replace(" ", "").split(":");
+					String[] stopArr = parameterStop[0].replace("(", "").replace(")", "").substring(2).replace(" ", "")
+							.split(":");
 
 					WheelStop stop = new WheelStop(Integer.parseInt(stopArr[0]), Integer.parseInt(stopArr[1]));
-					if (parameterStop[0].contains("M"))
-						mouseable = true;
+					ParameterStopType stopType = ParameterStopType.fromAbbreviation(parameterStop[0].substring(2, 3));
+
 					ValueDisplayFormat vdf = ValueDisplayFormat.fromAbbreviation(parameterStop[1]);
-					
+
 					if (parameterStop.length == 3) {
-						name = parameterStop[2];
-					}else {
-						name = parameterStop[4];
+						name = parameterStop[2].split("\"")[1];
+					} else {
+						name = parameterStop[4].split("\"")[1];
 					}
+					System.out.println("PStop: " + name + "(" + (stopType.getAbbreviation()) + stop.getStart() + ":"
+							+ stop.getEnd() + ") " + vdf.name());
+					if (vdf == ValueDisplayFormat.DEGREES) {
+						degreeRange = new WheelStop(Integer.parseInt(parameterStop[2]), Integer.parseInt(parameterStop[3]));
+					}
+					
+					stops.add(new ParameterStop(name, stopType, stop, vdf, degreeRange));
 
 				} else
 					object = new Parameter(parameterName, displayerNum, attribList,
-							ParameterType.fromAbbreviation(parameterType));
+							ParameterType.fromAbbreviation(parameterType), stops);
 
 			}
 			if (object != null) {
