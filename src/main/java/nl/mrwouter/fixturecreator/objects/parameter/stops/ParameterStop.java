@@ -6,9 +6,8 @@ public class ParameterStop {
 	private ParameterStopType type;
 	private WheelStop wheelstop;
 	private ValueDisplayFormat vdf;
-	
+
 	private WheelStop degreeRange;
-	
 
 	public ParameterStop(String name, ParameterStopType type, WheelStop stop, ValueDisplayFormat vdf) {
 		this.name = name;
@@ -32,7 +31,7 @@ public class ParameterStop {
 	}
 
 	/*
-	 * Still needs an implementation for multiple weheelstops (page 22)
+	 * Still needs an implementation for multiple wheelstops (page 22)
 	 */
 	public WheelStop getWheelStop() {
 		return wheelstop;
@@ -44,6 +43,23 @@ public class ParameterStop {
 
 	public WheelStop getDegreeRange() {
 		return degreeRange;
+	}
+
+	@Override
+	public String toString() {
+		// (M 0:255),D,0,170,"Pan="
+		// ( 32: 32),N,"Color 2"
+
+		String degrees = vdf == ValueDisplayFormat.DEGREES
+				? getDegreeRange().getStart() + "," + getDegreeRange().getEnd() + ","
+				: "";
+		return "(" + getType().getAbbreviation() + addZeros("" + getWheelStop().getStart()) + ":"
+				+ addZeros("" + getWheelStop().getEnd()) + ")," + getValueDisplayFormat().getAbbreviation() + ","
+				+ degrees + "\"" + getName() + "\"";
+	}
+
+	private String addZeros(String string) {
+		return String.format("%1$3s", string);
 	}
 
 	// General:

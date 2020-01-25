@@ -77,6 +77,9 @@ public class FixtureParser {
 				out.writeln("		displayerNum = " + param.getDisplayerNum());
 				out.writeln("		attribList = " + Arrays.stream(param.getAttributeList()).mapToObj(String::valueOf)
 						.collect(Collectors.joining(",")));
+				for (ParameterStop stop: param.getStops()) {
+					out.writeln("		stop = " + stop.toString());
+				}
 			}
 			out.write("end");
 			out.flush();
@@ -216,8 +219,6 @@ public class FixtureParser {
 					} else {
 						name = parameterStop[4].split("\"")[1];
 					}
-					System.out.println("PStop: " + name + "(" + (stopType.getAbbreviation()) + stop.getStart() + ":"
-							+ stop.getEnd() + ") " + vdf.name());
 					if (vdf == ValueDisplayFormat.DEGREES) {
 						degreeRange = new WheelStop(Integer.parseInt(parameterStop[2]), Integer.parseInt(parameterStop[3]));
 					}
