@@ -177,7 +177,15 @@ public class FixtureInfoGUI extends JPanel {
 
 					List<Parameter> parameters = new ArrayList<>();
 					for (FixtureParameterGUI fixParam : fixtureGui.parameterTabs) {
-						Parameter param = fixParam.getParameter();
+						Parameter param = null;
+						try {
+							param = fixParam.getParameter();
+						} catch (Exception ex) {
+							ex.printStackTrace();
+							statusmessage.setText("<html>" + ex.getMessage() + "</html>");
+							statusmessage.setForeground(Color.RED);
+							return;
+						}
 
 						if (param.getName().replaceAll("\\s", "").isEmpty()) {
 							statusmessage.setText("Parameter " + paramsChecked + " doesn't have a name!");
@@ -190,7 +198,6 @@ public class FixtureInfoGUI extends JPanel {
 							statusmessage.setForeground(Color.RED);
 							return;
 						}
-
 						parameters.add(fixParam.getParameter());
 						paramsChecked++;
 					}
@@ -244,70 +251,71 @@ public class FixtureInfoGUI extends JPanel {
 		fixtureVersionHint.setFont(new Font("Dialog", Font.BOLD, 11));
 
 		GroupLayout groupLayout = new GroupLayout(panel);
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(48)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout
+				.createSequentialGroup().addGap(48)
+				.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(openFileButton, GroupLayout.PREFERRED_SIZE, 119, GroupLayout.PREFERRED_SIZE)
-							.addContainerGap())
+								.addComponent(openFileButton, GroupLayout.PREFERRED_SIZE, 119,
+										GroupLayout.PREFERRED_SIZE)
+								.addContainerGap())
 						.addGroup(groupLayout.createSequentialGroup()
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-									.addComponent(fixtureManufacturerHint, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-									.addComponent(fullFixtureNameHint, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-									.addComponent(fixtureVersionHint, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-									.addComponent(fullFixtureManufacturerHint, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-								.addComponent(fixtureNameHint, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE))
-							.addPreferredGap(ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(fixtureManufacturer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(fullFixtureManufacturer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
-									.addComponent(fixtureVersion, Alignment.LEADING)
-									.addComponent(fullFixtureName, Alignment.LEADING)
-									.addComponent(fixtureName))
-								.addGroup(groupLayout.createSequentialGroup()
-									.addComponent(createFixtureButton)
-									.addPreferredGap(ComponentPlacement.RELATED, 176, Short.MAX_VALUE)
-									.addComponent(createParameterButton))
-								.addComponent(statusmessage, GroupLayout.PREFERRED_SIZE, 423, GroupLayout.PREFERRED_SIZE))
-							.addGap(27))))
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.TRAILING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap(85, Short.MAX_VALUE)
-					.addComponent(openFileButton)
-					.addGap(29)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(fullFixtureManufacturerHint)
-						.addComponent(fullFixtureManufacturer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(fixtureManufacturer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+										.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+												.addComponent(fixtureManufacturerHint, GroupLayout.DEFAULT_SIZE,
+														GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+												.addComponent(fullFixtureNameHint, GroupLayout.DEFAULT_SIZE,
+														GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+												.addComponent(fixtureVersionHint, GroupLayout.DEFAULT_SIZE,
+														GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+												.addComponent(fullFixtureManufacturerHint, GroupLayout.DEFAULT_SIZE,
+														GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+										.addComponent(fixtureNameHint, GroupLayout.PREFERRED_SIZE, 127,
+												GroupLayout.PREFERRED_SIZE))
+								.addPreferredGap(ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
+								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+										.addComponent(fixtureManufacturer, GroupLayout.PREFERRED_SIZE,
+												GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addComponent(fullFixtureManufacturer, GroupLayout.PREFERRED_SIZE,
+												GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
+												.addComponent(fixtureVersion, Alignment.LEADING)
+												.addComponent(fullFixtureName, Alignment.LEADING)
+												.addComponent(fixtureName))
+										.addGroup(groupLayout.createSequentialGroup().addComponent(createFixtureButton)
+												.addPreferredGap(ComponentPlacement.RELATED, 176, Short.MAX_VALUE)
+												.addComponent(createParameterButton))
+										.addComponent(statusmessage, GroupLayout.PREFERRED_SIZE, 423,
+												GroupLayout.PREFERRED_SIZE))
+								.addGap(27)))));
+		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.TRAILING).addGroup(groupLayout
+				.createSequentialGroup().addContainerGap(85, Short.MAX_VALUE).addComponent(openFileButton).addGap(29)
+				.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(fullFixtureManufacturerHint)
+						.addComponent(fullFixtureManufacturer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+								GroupLayout.PREFERRED_SIZE))
+				.addPreferredGap(ComponentPlacement.UNRELATED)
+				.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(fixtureManufacturer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+								GroupLayout.PREFERRED_SIZE)
 						.addComponent(fixtureManufacturerHint))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(fullFixtureName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(ComponentPlacement.UNRELATED)
+				.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(fullFixtureName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+								GroupLayout.PREFERRED_SIZE)
 						.addComponent(fullFixtureNameHint))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(fixtureName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(ComponentPlacement.UNRELATED)
+				.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(fixtureName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+								GroupLayout.PREFERRED_SIZE)
 						.addComponent(fixtureNameHint, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE))
-					.addGap(13)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(fixtureVersion, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addGap(13)
+				.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(fixtureVersion, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+								GroupLayout.PREFERRED_SIZE)
 						.addComponent(fixtureVersionHint, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE))
-					.addGap(18)
-					.addComponent(statusmessage, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(createFixtureButton)
-						.addComponent(createParameterButton))
-					.addGap(70))
-		);
+				.addGap(18).addComponent(statusmessage, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(ComponentPlacement.RELATED).addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(createFixtureButton).addComponent(createParameterButton))
+				.addGap(70)));
 		panel.setLayout(groupLayout);
 	}
 
