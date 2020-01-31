@@ -46,6 +46,7 @@ public class FixtureParameterGUI extends JPanel {
 	private JList<String> attributes;
 	private JTextField parameterName;
 	private JTable table;
+	private JTextField stopCount;
 
 	public FixtureParameterGUI(MainFixtureFrame fixtureGui, Parameter param) {
 		// this.fixtureGui = fixtureGui;
@@ -117,47 +118,127 @@ public class FixtureParameterGUI extends JPanel {
 
 		JScrollPane tablePane = new JScrollPane();
 
+		JLabel stopCountHint = new JLabel();
+		stopCountHint.setText("Number of stops");
+		stopCountHint.setFont(new Font("Dialog", Font.PLAIN, 11));
+
+		stopCount = new JTextField();
+		stopCount.setColumns(12);
+		stopCount.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				try {
+					int rowCount = Integer.parseInt(stopCount.getText());
+					Object[][] tableContent = new Object[rowCount][];
+					if (table != null && table.getRowCount() != 0) {
+						for (int i = 0; i < rowCount; i++) {
+							if (i < table.getRowCount()) {
+								// String column[] = { "Name", "Type", "Range (min-max)", "Value display",
+								// "Degree range (min-max)" };
+								String row0 = table.getValueAt(i, 0) == null ? null : table.getValueAt(i, 0).toString();
+								ParameterStopType row1 = table.getValueAt(i, 1) == null
+										? ParameterStopType.NON_MOUSEABLE
+										: (ParameterStopType) table.getValueAt(i, 1);
+
+								String row2 = table.getValueAt(i, 2) == null ? "" : table.getValueAt(i, 2).toString();
+								ValueDisplayFormat row3 = table.getValueAt(i, 3) == null ? null
+										: (ValueDisplayFormat) table.getValueAt(i, 3);
+								String row4 = table.getValueAt(i, 4) == null ? null : (String) table.getValueAt(i, 4);
+
+								tableContent[i] = new Object[] { row0, row1, row2, row3, row4 };
+							} else {
+								int jump = 255 / rowCount;
+								int rangeStart = jump * i;
+								int rangeEnd = jump * (i+1);
+								tableContent[i] = new Object[] { "", ParameterStopType.NON_MOUSEABLE,
+										rangeStart + "-" + rangeEnd, ValueDisplayFormat.NO_VALUE_DISPLAYED, "" };
+							}
+						}
+						tablePane.setViewportView(getTable(rowCount, tableContent));
+					} else {
+						tablePane.setViewportView(getTable(rowCount, new Object[rowCount][]));
+					}
+
+				} catch (NumberFormatException ex) {
+					//
+				}
+			}
+		});
+
 		GroupLayout groupLayout = new GroupLayout(panel);
 		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(groupLayout.createSequentialGroup().addContainerGap()
 						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addGroup(
-										groupLayout.createSequentialGroup()
-												.addComponent(attributeListHint, GroupLayout.DEFAULT_SIZE, 97,
-														Short.MAX_VALUE)
-												.addGap(593))
-								.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup().addGroup(groupLayout
-										.createParallelGroup(Alignment.TRAILING)
+								.addGroup(groupLayout.createSequentialGroup()
 										.addComponent(tablePane, GroupLayout.PREFERRED_SIZE, 654,
 												GroupLayout.PREFERRED_SIZE)
-										.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup().addGroup(
-												groupLayout.createParallelGroup(Alignment.TRAILING).addGroup(groupLayout
+										.addContainerGap())
+								.addGroup(
+										groupLayout.createParallelGroup(Alignment.TRAILING)
+												.addGroup(groupLayout
 														.createSequentialGroup()
-														.addComponent(parameterNameHint, GroupLayout.DEFAULT_SIZE, 166,
+														.addComponent(attributeListHint, GroupLayout.DEFAULT_SIZE, 97,
 																Short.MAX_VALUE)
-														.addPreferredGap(ComponentPlacement.RELATED)
-														.addComponent(parameterName, GroupLayout.PREFERRED_SIZE, 225,
-																GroupLayout.PREFERRED_SIZE))
+														.addGap(593))
+												.addGroup(groupLayout.createSequentialGroup().addGroup(groupLayout
+														.createParallelGroup(Alignment.LEADING)
 														.addGroup(groupLayout.createSequentialGroup()
-																.addComponent(parameterDisplayHint,
-																		GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
-																.addPreferredGap(ComponentPlacement.RELATED)
 																.addGroup(groupLayout
-																		.createParallelGroup(Alignment.LEADING, false)
-																		.addComponent(parameterDisplay, 0,
-																				GroupLayout.DEFAULT_SIZE,
-																				Short.MAX_VALUE)
-																		.addComponent(comboBox, 0, 225, Short.MAX_VALUE)
-																		.addComponent(scrollPane, Alignment.TRAILING,
-																				GroupLayout.PREFERRED_SIZE, 225,
-																				GroupLayout.PREFERRED_SIZE))))
-												.addGap(142).addComponent(deleteParameterButton))
-										.addGroup(Alignment.LEADING,
-												groupLayout
-														.createSequentialGroup().addComponent(parameterTypeHint,
-																GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE)
-														.addGap(272)))
-										.addGap(36)))));
+																		.createParallelGroup(Alignment.TRAILING)
+																		.addGroup(groupLayout
+																				.createSequentialGroup()
+																				.addComponent(parameterNameHint,
+																						GroupLayout.DEFAULT_SIZE, 136,
+																						Short.MAX_VALUE)
+																				.addPreferredGap(
+																						ComponentPlacement.RELATED)
+																				.addComponent(
+																						parameterName,
+																						GroupLayout.PREFERRED_SIZE, 225,
+																						GroupLayout.PREFERRED_SIZE))
+																		.addGroup(groupLayout
+																				.createSequentialGroup()
+																				.addGroup(groupLayout
+																						.createParallelGroup(
+																								Alignment.LEADING)
+																						.addComponent(
+																								parameterDisplayHint,
+																								GroupLayout.DEFAULT_SIZE,
+																								136, Short.MAX_VALUE)
+																						.addComponent(
+																								stopCountHint,
+																								GroupLayout.PREFERRED_SIZE,
+																								95,
+																								GroupLayout.PREFERRED_SIZE))
+																				.addPreferredGap(
+																						ComponentPlacement.RELATED)
+																				.addGroup(groupLayout
+																						.createParallelGroup(
+																								Alignment.LEADING,
+																								false)
+																						.addComponent(parameterDisplay,
+																								0,
+																								GroupLayout.DEFAULT_SIZE,
+																								Short.MAX_VALUE)
+																						.addComponent(
+																								comboBox, 0, 225,
+																								Short.MAX_VALUE)
+																						.addComponent(
+																								scrollPane,
+																								Alignment.TRAILING,
+																								GroupLayout.PREFERRED_SIZE,
+																								225,
+																								GroupLayout.PREFERRED_SIZE)
+																						.addComponent(stopCount,
+																								Alignment.TRAILING,
+																								GroupLayout.PREFERRED_SIZE,
+																								225,
+																								GroupLayout.PREFERRED_SIZE))))
+																.addGap(142).addComponent(deleteParameterButton))
+														.addGroup(groupLayout.createSequentialGroup()
+																.addComponent(parameterTypeHint,
+																		GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE)
+																.addGap(272)))
+														.addGap(36))))));
 		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout
 				.createSequentialGroup().addContainerGap()
 				.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
@@ -179,14 +260,17 @@ public class FixtureParameterGUI extends JPanel {
 								.addComponent(attributeListHint, GroupLayout.PREFERRED_SIZE, 16,
 										GroupLayout.PREFERRED_SIZE)
 								.addGap(63))
-						.addGroup(
-								groupLayout.createSequentialGroup()
-										.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 57,
+						.addGroup(groupLayout.createSequentialGroup()
+								.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 57, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(ComponentPlacement.UNRELATED)
+								.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+										.addComponent(stopCount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
 												GroupLayout.PREFERRED_SIZE)
-										.addGap(22)))
-				.addPreferredGap(ComponentPlacement.RELATED)
-				.addComponent(tablePane, GroupLayout.PREFERRED_SIZE, 168, GroupLayout.PREFERRED_SIZE)
-				.addContainerGap(105, Short.MAX_VALUE)));
+										.addComponent(stopCountHint, GroupLayout.PREFERRED_SIZE, 16,
+												GroupLayout.PREFERRED_SIZE))
+								.addPreferredGap(ComponentPlacement.RELATED)))
+				.addGap(26).addComponent(tablePane, GroupLayout.PREFERRED_SIZE, 142, GroupLayout.PREFERRED_SIZE)
+				.addContainerGap(88, Short.MAX_VALUE)));
 		attributes = new JList<>();
 		scrollPane.setViewportView(attributes);
 		attributes.setModel(new DefaultComboBoxModel<String>(fixtureGui.getFixture().getAttributes().stream()
@@ -203,6 +287,7 @@ public class FixtureParameterGUI extends JPanel {
 		if (param != null) {
 			parameterName.setText(param.getName());
 			parameterDisplay.setSelectedItem(param.getDisplayerNum());
+			stopCount.setText(param.getStops().size() == 0 ? "1" : "" + param.getStops().size());
 
 			String importedParameterName = param.getType().name();
 			for (int i = 0; i < comboBox.getItemCount(); i++) {
@@ -295,7 +380,7 @@ public class FixtureParameterGUI extends JPanel {
 
 			if (name == null)
 				throw new IllegalArgumentException("Param " + parameter.getName() + " has an unnamed param stop.");
-			if (range == null || 	!range.contains("-") || !isInteger(range.split("-")[0])
+			if (range == null || !range.contains("-") || !isInteger(range.split("-")[0])
 					|| !isInteger(range.split("-")[1]))
 				throw new IllegalArgumentException(
 						"Param stop " + name + " (" + parameter.getName() + ") has an invalid range.");
