@@ -28,6 +28,7 @@ import nl.mrwouter.fixturecreator.menu.utils.CustomPSTEditor;
 import nl.mrwouter.fixturecreator.menu.utils.CustomVDFEditor;
 import nl.mrwouter.fixturecreator.menu.utils.LimitDocumentFilter;
 import nl.mrwouter.fixturecreator.menu.utils.ModifyListener;
+import nl.mrwouter.fixturecreator.objects.NameUtils;
 import nl.mrwouter.fixturecreator.objects.parameter.Parameter;
 import nl.mrwouter.fixturecreator.objects.parameter.ParameterType;
 import nl.mrwouter.fixturecreator.objects.parameter.stops.ParameterStop;
@@ -396,11 +397,18 @@ public class FixtureParameterGUI extends JPanel {
 							"Param stop " + name + " (" + parameter.getName() + ") has an invalid degreerange.");
 				}
 			}
-
 			WheelStop stoprange = WheelStop.parse(range);
 			WheelStop degreeRange = vdf == ValueDisplayFormat.DEGREES ? WheelStop.parse(range) : null;
 
+			if (NameUtils.containsIllegalCharacters(name)) {
+				throw new IllegalArgumentException(
+						"Param stop " + name + " (" + parameter.getName() + ") contains illegal characters.");
+			}
 			parameter.getStops().add(new ParameterStop(name, type, stoprange, vdf, degreeRange));
+		}
+		if (NameUtils.containsIllegalCharacters(parameter.getName())) {
+			throw new IllegalArgumentException(
+					"Param " + parameter.getName() + " has illegal characters in it's name.");
 		}
 		return parameter;
 	}

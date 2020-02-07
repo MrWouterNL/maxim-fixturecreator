@@ -23,6 +23,7 @@ import nl.mrwouter.fixturecreator.files.FixtureParser;
 import nl.mrwouter.fixturecreator.menu.utils.LimitDocumentFilter;
 import nl.mrwouter.fixturecreator.menu.utils.ModifyListener;
 import nl.mrwouter.fixturecreator.objects.Fixture;
+import nl.mrwouter.fixturecreator.objects.NameUtils;
 import nl.mrwouter.fixturecreator.objects.parameter.Parameter;
 
 public class FixtureInfoGUI extends JPanel {
@@ -161,6 +162,16 @@ public class FixtureInfoGUI extends JPanel {
 					}
 					if (fixtureGui.getFixture().getVersion() == null) {
 						statusmessage.setText("You need to enter a fixture version.");
+						statusmessage.setForeground(Color.RED);
+						return;
+					}
+					if (NameUtils.containsIllegalCharacters(fixtureGui.getFixture().getName())) {
+						statusmessage.setText("Fixture name contains illegal characters.");
+						statusmessage.setForeground(Color.RED);
+						return;
+					}
+					if (NameUtils.containsIllegalCharacters(fixtureGui.getFixture().getManufacturer())) {
+						statusmessage.setText("Fixture name contains illegal characters.");
 						statusmessage.setForeground(Color.RED);
 						return;
 					}

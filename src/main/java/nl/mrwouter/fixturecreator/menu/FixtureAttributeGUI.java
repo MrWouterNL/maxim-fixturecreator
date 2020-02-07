@@ -24,6 +24,7 @@ import javax.swing.text.DocumentFilter;
 
 import nl.mrwouter.fixturecreator.menu.utils.LimitDocumentFilter;
 import nl.mrwouter.fixturecreator.objects.Attribute;
+import nl.mrwouter.fixturecreator.objects.NameUtils;
 
 public class FixtureAttributeGUI extends JPanel {
 
@@ -216,6 +217,11 @@ public class FixtureAttributeGUI extends JPanel {
 				throw new IllegalArgumentException(
 						"Column 3 on row " + (count + 1) + " expected a name, but empty string was received.");
 
+			if (NameUtils.containsIllegalCharacters(name)) {
+				throw new IllegalArgumentException(
+						"Column 3 on row " + (count + 1) + " has illegal characters in it's attribname.");
+			}
+			
 			if (!isEmpty(table.getValueAt(count, 1)))
 				fineChan = (Integer) table.getValueAt(count, 1);
 			if (!isEmpty(table.getValueAt(count, 3)))
@@ -236,7 +242,7 @@ public class FixtureAttributeGUI extends JPanel {
 			throw new IllegalArgumentException(
 					"No attribute with the name 'INTENSITY' found. Please create one on channel 0 if there is none (see page 24 of the fixt. manual).");
 		}
-
+		
 		return attributes;
 	}
 
