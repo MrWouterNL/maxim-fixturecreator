@@ -171,7 +171,7 @@ public class FixtureInfoGUI extends JPanel {
 						return;
 					}
 					if (NameUtils.containsIllegalCharacters(fixtureGui.getFixture().getManufacturer())) {
-						statusmessage.setText("Fixture name contains illegal characters.");
+						statusmessage.setText("Fixture manufacturer contains illegal characters.");
 						statusmessage.setForeground(Color.RED);
 						return;
 					}
