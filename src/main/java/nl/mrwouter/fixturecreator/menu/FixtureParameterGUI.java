@@ -129,11 +129,9 @@ public class FixtureParameterGUI extends JPanel {
 				try {
 					int rowCount = Integer.parseInt(stopCount.getText());
 					Object[][] tableContent = new Object[rowCount][];
-					if (table != null && table.getRowCount() != 0) {
+					if (table != null && table.getRowCount() != 0 && table.getColumnCount() != 0) {
 						for (int i = 0; i < rowCount; i++) {
 							if (i < table.getRowCount()) {
-								// String column[] = { "Name", "Type", "Range (min-max)", "Value display",
-								// "Degree range (min-max)" };
 								String row0 = table.getValueAt(i, 0) == null ? null : table.getValueAt(i, 0).toString();
 								ParameterStopType row1 = table.getValueAt(i, 1) == null
 										? ParameterStopType.NON_MOUSEABLE
@@ -155,7 +153,14 @@ public class FixtureParameterGUI extends JPanel {
 						}
 						tablePane.setViewportView(getTable(rowCount, tableContent));
 					} else {
-						tablePane.setViewportView(getTable(rowCount, new Object[rowCount][]));
+						for (int i = 0; i < rowCount; i++) {
+							int jump = 255 / rowCount;
+							int rangeStart = jump * i;
+							int rangeEnd = jump * (i + 1);
+							tableContent[i] = new Object[] { "", ParameterStopType.NON_MOUSEABLE,
+									rangeStart + "-" + rangeEnd, ValueDisplayFormat.NO_VALUE_DISPLAYED, "" };
+						}
+						tablePane.setViewportView(getTable(rowCount, tableContent));
 					}
 
 				} catch (NumberFormatException ex) {
