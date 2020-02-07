@@ -148,7 +148,7 @@ public class FixtureParameterGUI extends JPanel {
 							} else {
 								int jump = 255 / rowCount;
 								int rangeStart = jump * i;
-								int rangeEnd = jump * (i+1);
+								int rangeEnd = jump * (i + 1);
 								tableContent[i] = new Object[] { "", ParameterStopType.NON_MOUSEABLE,
 										rangeStart + "-" + rangeEnd, ValueDisplayFormat.NO_VALUE_DISPLAYED, "" };
 							}

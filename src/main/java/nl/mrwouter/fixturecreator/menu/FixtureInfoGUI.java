@@ -204,10 +204,11 @@ public class FixtureInfoGUI extends JPanel {
 					fixtureGui.getFixture().setParameters(parameters);
 
 					FixtureParser.getInstance().write(fixtureGui.getFixture(), targetFile);
-					String prettyName = fixtureGui.getFixture().getFullName() == null
+					String prettyName = nullOrEmpty(fixtureGui.getFixture().getFullName())
 							? fixtureGui.getFixture().getName()
 							: fixtureGui.getFixture().getFullName();
-					String prettyManufacturer = fixtureGui.getFixture().getFullManufacturer() == null
+
+					String prettyManufacturer = nullOrEmpty(fixtureGui.getFixture().getFullManufacturer())
 							? fixtureGui.getFixture().getManufacturer()
 							: fixtureGui.getFixture().getFullManufacturer();
 
@@ -321,5 +322,9 @@ public class FixtureInfoGUI extends JPanel {
 
 	public JPanel getPanel() {
 		return panel;
+	}
+
+	private boolean nullOrEmpty(String str) {
+		return str == null || str.isEmpty();
 	}
 }

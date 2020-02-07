@@ -72,10 +72,11 @@ public class FixtureAttributeGUI extends JPanel {
 								Integer row3 = table.getValueAt(i, 3) == null ? null : (Integer) table.getValueAt(i, 3);
 								Integer row4 = table.getValueAt(i, 4) == null ? null : (Integer) table.getValueAt(i, 4);
 								Integer row5 = table.getValueAt(i, 5) == null ? null : (Integer) table.getValueAt(i, 5);
+								Boolean row6 = (Boolean) table.getValueAt(i, 6);
 
-								tableContent[i] = new Object[] { row0, row1, row2, row3, row4, row5 };
+								tableContent[i] = new Object[] { row0, row1, row2, row3, row4, row5, row6 };
 							} else {
-								tableContent[i] = new Object[] { null, null, "", null, null, null };
+								tableContent[i] = new Object[] { null, null, "", null, null, null, false };
 							}
 						}
 						scrollPane.setViewportView(getTable(rowCount, tableContent));
@@ -107,22 +108,22 @@ public class FixtureAttributeGUI extends JPanel {
 		scrollPane.setViewportView(getTable(rowCount));
 
 		GroupLayout groupLayout = new GroupLayout(panel);
-		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup().addGap(48)
-						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 455, GroupLayout.PREFERRED_SIZE)
-								.addGroup(groupLayout.createSequentialGroup().addComponent(attributeCountHint)
-										.addGap(85).addComponent(attributeCount, GroupLayout.PREFERRED_SIZE,
-												GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-								.addGroup(groupLayout.createSequentialGroup().addGap(202).addComponent(statusmessage,
-										GroupLayout.PREFERRED_SIZE, 373, GroupLayout.PREFERRED_SIZE)))
-						.addContainerGap(77, Short.MAX_VALUE)));
+		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout
+				.createSequentialGroup().addGap(48)
+				.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+						.addGroup(groupLayout.createSequentialGroup().addComponent(attributeCountHint).addGap(85)
+								.addComponent(attributeCount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+										GroupLayout.PREFERRED_SIZE))
+						.addGroup(groupLayout.createSequentialGroup().addGap(202).addComponent(statusmessage,
+								GroupLayout.PREFERRED_SIZE, 373, GroupLayout.PREFERRED_SIZE))
+						.addComponent(scrollPane))
+				.addContainerGap(77, Short.MAX_VALUE)));
 		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(groupLayout.createSequentialGroup().addGap(44)
 						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(attributeCountHint)
 								.addComponent(attributeCount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
 										GroupLayout.PREFERRED_SIZE))
-						.addGap(18).addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE)
+						.addGap(18).addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE)
 						.addPreferredGap(ComponentPlacement.RELATED).addComponent(statusmessage).addGap(124)));
 		panel.setLayout(groupLayout);
 	}
@@ -138,9 +139,9 @@ public class FixtureAttributeGUI extends JPanel {
 				Attribute attrib = fixtureGui.getFixture().getAttributes().get(i);
 				data[i] = (Object[]) Arrays.asList(attrib.getChannel(), getTableValue(attrib.getFineChannel()),
 						attrib.getName(), getTableValue(attrib.getHomeVal()), getTableValue(attrib.getMinVal(), true),
-						getTableValue(attrib.getMaxVal())).toArray();
+						getTableValue(attrib.getMaxVal()), attrib.hasVirtualDimmer()).toArray();
 			} else {
-				data[i] = (Object[]) Arrays.asList(null, null, "", null, null, null).toArray();
+				data[i] = (Object[]) Arrays.asList(null, null, "", null, null, null, false).toArray();
 			}
 		}
 
@@ -150,7 +151,7 @@ public class FixtureAttributeGUI extends JPanel {
 	public Integer getTableValue(int value) {
 		return getTableValue(value, false);
 	}
-	
+
 	public Integer getTableValue(int value, boolean showZero) {
 		return ((value == 0 && !showZero) || value == -1) ? null : value;
 	}
@@ -161,7 +162,7 @@ public class FixtureAttributeGUI extends JPanel {
 		((AbstractDocument) field.getDocument()).setDocumentFilter(new LimitDocumentFilter(9));
 		DefaultCellEditor dce = new DefaultCellEditor(field);
 
-		String column[] = { "Channel", "FineChan", "Name", "Homevalue", "MinValue", "MaxValue" };
+		String column[] = { "Channel", "FineChan", "Name", "Homevalue", "MinValue", "MaxValue", "Virtual Dimmer" };
 		table = new JTable(data, column) {
 			@Override
 			public TableCellEditor getCellEditor(int row, int column) {
@@ -179,6 +180,8 @@ public class FixtureAttributeGUI extends JPanel {
 				switch (column) {
 				case 2:
 					return String.class;
+				case 6:
+					return Boolean.class;
 				default:
 					return Integer.class;
 				}
@@ -201,6 +204,7 @@ public class FixtureAttributeGUI extends JPanel {
 
 			int channel = -1, fineChan = -1, homeVal = 0, minval = -1, maxval = -1;
 			String name = "";
+			boolean virtualDimmer = false;
 
 			if (table.getValueAt(count, 0).toString().isEmpty()) {
 				throw new IllegalArgumentException("No attribute channel given on row " + (count + 1) + ".");
@@ -220,20 +224,23 @@ public class FixtureAttributeGUI extends JPanel {
 				minval = (Integer) table.getValueAt(count, 4);
 			if (!isEmpty(table.getValueAt(count, 5)))
 				maxval = (Integer) table.getValueAt(count, 5);
+			
+			virtualDimmer = (boolean) table.getValueAt(count, 6);
 
-			attributes.add(new Attribute(name, channel, homeVal, fineChan, minval, maxval));
+			attributes.add(new Attribute(name, channel, homeVal, fineChan, minval, maxval, virtualDimmer));
 		}
-		
-		if (!attributes.stream().filter(atr->atr.getName().equals("INTENSITY")).findFirst().isPresent()) {
+
+		if (!attributes.stream().filter(atr -> atr.getName().equals("INTENSITY") || atr.hasVirtualDimmer()).findFirst()
+				.isPresent()) {
 			// Required according to page 24 of the manual
 			throw new IllegalArgumentException(
 					"No attribute with the name 'INTENSITY' found. Please create one on channel 0 if there is none (see page 24 of the fixt. manual).");
 		}
-		
+
 		return attributes;
 	}
-	
-	private boolean isEmpty(Object obj)  {
+
+	private boolean isEmpty(Object obj) {
 		return obj == null || obj.toString().isEmpty();
 	}
 }

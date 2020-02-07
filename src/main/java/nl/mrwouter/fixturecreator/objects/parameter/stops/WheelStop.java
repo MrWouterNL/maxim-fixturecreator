@@ -22,8 +22,8 @@ public class WheelStop {
 		return end;
 	}
 	
+	@Override
 	public String toString() {
 		return start + "-" + end;
 	}
-
 }

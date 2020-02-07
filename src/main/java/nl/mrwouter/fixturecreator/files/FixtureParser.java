@@ -56,8 +56,9 @@ public class FixtureParser {
 
 			for (Attribute attr : fixture.getAttributes()) {
 				out.newLine();
+				String vDimmer = attr.hasVirtualDimmer() ? "i" : "";
 				out.writeln("	Attribute");
-				out.writeln("		name = \"" + attr.getName() + "\"");
+				out.writeln("		name = " + vDimmer + "\"" + attr.getName() + "\"");
 				out.writeln("		channel = " + attr.getChannel());
 				if (attr.getFineChannel() != -1)
 					out.writeln("		fineChan = " + attr.getFineChannel());
@@ -159,6 +160,7 @@ public class FixtureParser {
 		String attributeName = null;
 		int attributeChannel = 0, attributeFineChan = -1, attributeHomeVal = 0, attributeMinVal = -1,
 				attributeMaxVal = -1;
+		boolean virtualDimmer = false;
 
 		String parameterName = null, parameterType = null;
 		int[] attribList = null;
@@ -173,9 +175,11 @@ public class FixtureParser {
 				continue;
 
 			if (next == NextFound.ATTRIBUTE) {
-				if (line.contains("name") && line.contains("="))
-					attributeName = line.split("=")[1].replace("\"", "").replaceAll("\\s", "");
-				else if (line.contains("channel") && line.contains("="))
+				if (line.contains("name") && line.contains("=")) {
+					attributeName = line.split("=")[1].split("\"")[1];
+					if (line.split("=")[1].split("\"")[0].contains("i")) 
+						virtualDimmer = true;
+				}else if (line.contains("channel") && line.contains("="))
 					attributeChannel = Integer.valueOf(line.split("=")[1].replaceAll("\\s", ""));
 				else if (line.contains("fineChan") && line.contains("="))
 					attributeFineChan = Integer.valueOf(line.split("=")[1].replaceAll("\\s", ""));
@@ -187,7 +191,7 @@ public class FixtureParser {
 					attributeMaxVal = Integer.valueOf(line.split("=")[1].replaceAll("\\s", ""));
 				else
 					object = new Attribute(attributeName, attributeChannel, attributeHomeVal, attributeFineChan,
-							attributeMinVal, attributeMaxVal);
+							attributeMinVal, attributeMaxVal, virtualDimmer);
 
 			} else if (next == NextFound.PARAMETER) {
 				if (line.contains("name") && line.contains("="))

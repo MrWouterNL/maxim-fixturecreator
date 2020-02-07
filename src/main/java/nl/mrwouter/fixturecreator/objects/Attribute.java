@@ -4,6 +4,7 @@ public class Attribute {
 
 	private String name;
 	private int channel, homeVal, fineChan = -1, minval = -1, maxval = -1;
+	private boolean virtualDimmer;
 
 	public Attribute(String name, int channel, int homeVal) {
 		this.name = name;
@@ -16,10 +17,11 @@ public class Attribute {
 		this.fineChan = fineChan;
 	}
 
-	public Attribute(String name, int channel, int homeVal, int fineChan, int minval, int maxval) {
+	public Attribute(String name, int channel, int homeVal, int fineChan, int minval, int maxval, boolean virtualDimmer) {
 		this(name, channel, homeVal, fineChan);
 		this.minval = minval;
 		this.maxval = maxval;
+		this.virtualDimmer = virtualDimmer;
 	}
 
 	public String getName() {
@@ -44,5 +46,9 @@ public class Attribute {
 
 	public int getMaxVal() {
 		return maxval;
+	}
+	
+	public boolean hasVirtualDimmer() {
+		return virtualDimmer;
 	}
 }
