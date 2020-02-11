@@ -240,7 +240,7 @@ public class FixtureAttributeGUI extends JPanel {
 				.isPresent()) {
 			// Required according to page 24 of the manual
 			throw new IllegalArgumentException(
-					"No attribute with the name 'INTENSITY' found. Please create one on channel 0 if there is none (see page 24 of the fixt. manual).");
+					"No attribute with the name 'INTENSITY' found. Please create one on channel 0 if there is none (see page 24 of the fixt. manual) or use virtual dimmers.");
 		}
 		
 		return attributes;
