@@ -58,7 +58,7 @@ public class FixtureParser {
 				out.newLine();
 				String vDimmer = attr.hasVirtualDimmer() ? "i" : "";
 				out.writeln("	Attribute");
-				out.writeln("		name = " + vDimmer + "\"" + attr.getName() + "\"");
+				out.writeln("		name = " + vDimmer + "\"" + attr.getPrintableName() + "\"");
 				out.writeln("		channel = " + attr.getChannel());
 				if (attr.getFineChannel() != -1)
 					out.writeln("		fineChan = " + attr.getFineChannel());
@@ -73,12 +73,12 @@ public class FixtureParser {
 			for (Parameter param : fixture.getParameters()) {
 				out.newLine();
 				out.writeln("	Parameter");
-				out.writeln("		name = \"" + param.getName() + "\"");
+				out.writeln("		name = \"" + param.getPrintableName() + "\"");
 				out.writeln("		type = " + param.getType().getAbbreviation());
 				out.writeln("		displayerNum = " + param.getDisplayerNum());
 				out.writeln("		attribList = " + Arrays.stream(param.getAttributeList()).mapToObj(String::valueOf)
 						.collect(Collectors.joining(",")));
-				for (ParameterStop stop: param.getStops()) {
+				for (ParameterStop stop : param.getStops()) {
 					out.writeln("		stop = " + stop.toString());
 				}
 			}
@@ -176,10 +176,10 @@ public class FixtureParser {
 
 			if (next == NextFound.ATTRIBUTE) {
 				if (line.contains("name") && line.contains("=")) {
-					attributeName = line.split("=")[1].split("\"")[1];
-					if (line.split("=")[1].split("\"")[0].contains("i")) 
+					attributeName = line.split("=")[1].split("\"")[1].replace("lt", "\\lt").replace("@", "lt");
+					if (line.split("=")[1].split("\"")[0].contains("i"))
 						virtualDimmer = true;
-				}else if (line.contains("channel") && line.contains("="))
+				} else if (line.contains("channel") && line.contains("="))
 					attributeChannel = Integer.valueOf(line.split("=")[1].replaceAll("\\s", ""));
 				else if (line.contains("fineChan") && line.contains("="))
 					attributeFineChan = Integer.valueOf(line.split("=")[1].replaceAll("\\s", ""));
@@ -195,7 +195,8 @@ public class FixtureParser {
 
 			} else if (next == NextFound.PARAMETER) {
 				if (line.contains("name") && line.contains("="))
-					parameterName = line.split("=")[1].replace("\"", "").replaceAll("\\s", "");
+					parameterName = line.split("=")[1].replace("\"", "").replaceAll("\\s", "").replace("lt", "\\lt")
+							.replace("@", "lt");
 				else if (line.contains("type") && line.contains("="))
 					parameterType = line.split("=")[1].replaceAll("\\s", "");
 				else if (line.contains("displayerNum") && line.contains("="))
@@ -224,9 +225,10 @@ public class FixtureParser {
 						name = parameterStop[4].split("\"")[1];
 					}
 					if (vdf == ValueDisplayFormat.DEGREES) {
-						degreeRange = new WheelStop(Integer.parseInt(parameterStop[2]), Integer.parseInt(parameterStop[3]));
+						degreeRange = new WheelStop(Integer.parseInt(parameterStop[2]),
+								Integer.parseInt(parameterStop[3]));
 					}
-					
+
 					stops.add(new ParameterStop(name, stopType, stop, vdf, degreeRange));
 
 				} else

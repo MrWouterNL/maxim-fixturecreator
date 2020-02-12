@@ -29,6 +29,10 @@ public class Parameter {
 	public String getName() {
 		return name;
 	}
+	
+	public String getPrintableName() {
+		return name.replace("\\lt", "l\\t").replace("lt", "@").replace("l\\t", "lt");
+	}
 
 	public void setType(ParameterType type) {
 		this.type = type;

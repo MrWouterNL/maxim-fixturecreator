@@ -27,6 +27,10 @@ public class Attribute {
 	public String getName() {
 		return name;
 	}
+	
+	public String getPrintableName() {
+		return name.replace("\\lt", "l\\t").replace("lt", "@").replace("l\\t", "lt");
+	}
 
 	public int getChannel() {
 		return channel;

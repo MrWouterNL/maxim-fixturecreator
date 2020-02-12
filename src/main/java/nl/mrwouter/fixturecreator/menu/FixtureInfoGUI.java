@@ -233,6 +233,15 @@ public class FixtureInfoGUI extends JPanel {
 		JButton createParameterButton = new JButton("Create Parameter");
 		createParameterButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				try {
+					fixtureGui.getFixture().setAttributes(fixtureGui.fixtureAttributes.getAttributes());
+				} catch (IllegalArgumentException ex) {
+					ex.printStackTrace();
+					statusmessage.setText("<html>" + ex.getMessage() + "</html>");
+					statusmessage.setForeground(Color.RED);
+					return;
+				}
+				
 				if (fixtureGui.getFixture().getAttributes().isEmpty()) {
 					statusmessage.setText("You need atleast one attribute to setup a parameter!");
 					statusmessage.setForeground(Color.RED);
