@@ -241,12 +241,13 @@ public class FixtureInfoGUI extends JPanel {
 					statusmessage.setForeground(Color.RED);
 					return;
 				}
-				
+
 				if (fixtureGui.getFixture().getAttributes().isEmpty()) {
 					statusmessage.setText("You need atleast one attribute to setup a parameter!");
 					statusmessage.setForeground(Color.RED);
 				} else {
 					fixtureGui.addFixtureParameter();
+					statusmessage.setText("");
 				}
 			}
 		});

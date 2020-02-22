@@ -277,6 +277,7 @@ public class FixtureParameterGUI extends JPanel {
 								.addPreferredGap(ComponentPlacement.RELATED)))
 				.addGap(26).addComponent(tablePane, GroupLayout.PREFERRED_SIZE, 142, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap(88, Short.MAX_VALUE)));
+		
 		attributes = new JList<>();
 		scrollPane.setViewportView(attributes);
 		attributes.setModel(new DefaultComboBoxModel<String>(fixtureGui.getFixture().getAttributes().stream()
